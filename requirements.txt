@@ -1,0 +1,28 @@
+# Core ML and Deep Learning
+# Note: For GPU support, replace these with:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+torch==2.9.0
+torchvision==0.24.0
+
+# Data Processing
+numpy==2.2.6
+pandas==2.3.3
+
+# Visualization
+matplotlib==3.10.7
+
+# Image Processing
+pillow==12.0.0
+
+# Jupyter Notebooks
+jupyter==1.1.1
+
+# TensorBoard for Training Visualization
+tensorboard==2.20.0
+
+# Kaggle Integration
+kaggle==1.7.4.5
+
+# Python 3.10 Compatibility
+typing-extensions==4.15.0
+
