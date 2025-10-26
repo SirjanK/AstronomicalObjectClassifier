@@ -11,7 +11,7 @@ python download.py
 This will download data which you can move into the `data/` directory (which is gitignored).
 
 ## Training
-Run `trainer.py`. See `python trainer.py --help` for all options. You can view tensorboard logs by running `tensorboard --logdir logs`. Furthermore, the best model based on validation loss will be saved there. If satisfied, move it into the `assets/` directory.
+Run `trainer.py`. See `python trainer.py --help` for all options. You can view tensorboard logs by running `tensorboard --logdir logs`. Furthermore, the best model based on validation loss will be saved under the `assets/` directory.
 
 ## Evaluation
-
+Run `Evaluator.ipynb` to evaluate the models.
