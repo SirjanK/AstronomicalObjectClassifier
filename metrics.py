@@ -57,9 +57,9 @@ def compute_per_class_metrics(outputs: torch.Tensor, targets: torch.Tensor, num_
             fn = ((pred != class_idx) & (targets == class_idx)).sum().item()
             
             # Precision = TP / (TP + FP)
-            precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            precision = 100 * tp / (tp + fp) if (tp + fp) > 0 else 0.0
             # Recall = TP / (TP + FN)
-            recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            recall = 100 * tp / (tp + fn) if (tp + fn) > 0 else 0.0
             
             precision_dict[class_idx] = precision
             recall_dict[class_idx] = recall
