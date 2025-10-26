@@ -55,7 +55,7 @@ def parse_args():
                        help='L2 regularization weight')
     parser.add_argument('--dropout', type=float, default=0.0,
                        help='Dropout probability')
-    parser.add_argument('--num_epochs', type=int, default=50,
+    parser.add_argument('--num_epochs', type=int, default=100,
                        help='Number of training epochs')
     
     # Model arguments
@@ -68,7 +68,7 @@ def parse_args():
                        help='Directory for TensorBoard logs and checkpoints')
     parser.add_argument('--log_freq', type=int, default=10,
                        help='Logging frequency (in batches)')
-    parser.add_argument('--val_freq', type=int, default=1,
+    parser.add_argument('--val_freq', type=int, default=5,
                        help='Validation frequency (in epochs)')
     
     # Smoothing arguments
