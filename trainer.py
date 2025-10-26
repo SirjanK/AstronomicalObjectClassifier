@@ -165,7 +165,7 @@ def train():
         preprocessor=preprocessor,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        shuffle_train=True
+        shuffle_training=True
     )
     
     num_classes = loader.get_num_classes()
@@ -181,18 +181,12 @@ def train():
     train_loader = loader.get_dataloader('training')
     features_sample, _ = next(iter(train_loader))
     
-    # Create model (passes feature_sample for potential future use)
-    model = create_model_from_args_and_sample(args, features_sample, num_classes)
+    # Create model and get its config (all handled in one function)
+    model, model_config = create_model_from_args_and_sample(args, features_sample, num_classes)
     model = model.to(device)
     print(f"Model: {model}")
     
     # Save model configuration
-    model_config = {
-        'model_type': args.model,
-        'input_dim': int(input_dim),
-        'num_classes': int(num_classes),
-        'dropout': args.dropout
-    }
     model_config_path = model_assets_dir / 'model_config.json'
     save_model_config(model_config, model_config_path)
     print(f"Saved model configuration to {model_config_path}")

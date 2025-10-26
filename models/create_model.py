@@ -86,7 +86,7 @@ def get_input_dim_from_sample(feature_sample: torch.Tensor) -> int:
     return input_dim
 
 
-def create_model_from_args_and_sample(args, feature_sample: torch.Tensor, num_classes: int) -> nn.Module:
+def create_model_from_args_and_sample(args, feature_sample: torch.Tensor, num_classes: int):
     """
     Create a model based on arguments and infer input dimension from feature sample.
     
@@ -99,18 +99,20 @@ def create_model_from_args_and_sample(args, feature_sample: torch.Tensor, num_cl
         num_classes: Number of classes
     
     Returns:
-        Model instance
+        Tuple of (model, config_dict)
     """
     input_dim = get_input_dim_from_sample(feature_sample)
     
     config = {
         'model_type': args.model,
-        'input_dim': input_dim,
-        'num_classes': num_classes,
+        'input_dim': int(input_dim),
+        'num_classes': int(num_classes),
         'dropout': args.dropout
     }
     
-    return create_model_from_config(config)
+    model = create_model_from_config(config)
+    
+    return model, config
 
 
 def get_model_preprocessor(model_type: str):
