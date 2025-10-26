@@ -1,0 +1,13 @@
+class_name,label
+asteroid,0
+black_hole,1
+earth,2
+galaxy,3
+jupiter,4
+mars,5
+mercury,6
+neptune,7
+pluto,8
+saturn,9
+uranus,10
+venus,11
