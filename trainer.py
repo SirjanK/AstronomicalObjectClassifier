@@ -257,7 +257,7 @@ def train():
             # Logging
             if (batch_idx + 1) % args.log_freq == 0:
                 writer.add_scalar('train/smoothed_loss', smoothed_loss, epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('train/instant_loss', loss.item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('train/instance_loss', loss.item(), epoch * len(train_loader) + batch_idx)
         
         # End of epoch metrics
         epoch_loss = running_loss / len(train_loader)
@@ -274,12 +274,12 @@ def train():
             print(f"  Val Loss: {val_metrics['loss']:.4f}, Val Acc (Top-1): {val_metrics['acc_top1']:.2f}%, Val Acc (Top-3): {val_metrics['acc_top3']:.2f}%")
             
             # Log to TensorBoard
-            writer.add_scalar('train/epoch_loss', epoch_loss, epoch)
-            writer.add_scalar('train/epoch_acc_top1', epoch_acc_top1, epoch)
-            writer.add_scalar('train/epoch_acc_top3', epoch_acc_top3, epoch)
-            writer.add_scalar('val/loss', val_metrics['loss'], epoch)
-            writer.add_scalar('val/acc_top1', val_metrics['acc_top1'], epoch)
-            writer.add_scalar('val/acc_top3', val_metrics['acc_top3'], epoch)
+            writer.add_scalar('loss/train', epoch_loss, epoch)
+            writer.add_scalar('acc_top1/train', epoch_acc_top1, epoch)
+            writer.add_scalar('acc_top3/train', epoch_acc_top3, epoch)
+            writer.add_scalar('loss/val', val_metrics['loss'], epoch)
+            writer.add_scalar('acc_top1/val', val_metrics['acc_top1'], epoch)
+            writer.add_scalar('acc_top3/val', val_metrics['acc_top3'], epoch)
             
             # Save best model to assets directory
             if val_metrics['loss'] < best_val_loss:
