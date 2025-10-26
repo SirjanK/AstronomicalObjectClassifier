@@ -1,5 +1,9 @@
-# Download script for astronomical object classifier data
-# Run this script to download data into the data/ directory
+import kagglehub
 
 if __name__ == "__main__":
-    print("Download script placeholder - implement data downloading logic here")
+    kagglehub.login()
+
+    # Download latest version
+    path = kagglehub.dataset_download("engeddy/astrophysical-objects-image-dataset")
+
+    print("Path to dataset files:", path)
