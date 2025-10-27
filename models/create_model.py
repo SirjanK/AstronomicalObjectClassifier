@@ -12,20 +12,17 @@ from enum import Enum
 from models.logistic_regression import LogisticRegressionModel
 from preprocessors import (
     get_salient_features_v2_preprocessor, 
-    get_salient_features_preprocessor,
     get_resize_preprocessor
 )
 
 
 class ModelType(Enum):
     """Enum for model types."""
-    LOGISTIC_REGRESSION = "logistic_regression"
     LOGISTIC_REGRESSION_V2 = "logistic_regression_v2"
 
 
 class PreprocessorType(Enum):
     """Enum for preprocessor types."""
-    SALIENT_FEATURES = "salient_features"
     SALIENT_FEATURES_V2 = "salient_features_v2"
     RESIZE = "resize"
 
@@ -49,7 +46,7 @@ def create_model_from_config(config: Dict[str, Any]) -> nn.Module:
     num_classes = config['num_classes']
     dropout = config.get('dropout', 0.0)
     
-    if model_type in ['logistic_regression', 'logistic_regression_v2']:
+    if model_type == 'logistic_regression_v2':
         return LogisticRegressionModel(
             input_dim=input_dim,
             num_classes=num_classes,
@@ -114,9 +111,7 @@ def get_preprocessor_for_model(model_type: str) -> PreprocessorType:
     Returns:
         PreprocessorType enum
     """
-    if model_type == 'logistic_regression':
-        return PreprocessorType.SALIENT_FEATURES
-    elif model_type == 'logistic_regression_v2':
+    if model_type == 'logistic_regression_v2':
         return PreprocessorType.SALIENT_FEATURES_V2
     else:
         raise ValueError(f"Unknown model type: {model_type}")
@@ -167,12 +162,7 @@ def get_model_preprocessor(model_type: str):
     """
     preprocessor_type = get_preprocessor_for_model(model_type)
     
-    if preprocessor_type == PreprocessorType.SALIENT_FEATURES:
-        return get_salient_features_preprocessor(
-            image_resize_size=(224, 224),
-            grid_size=(32, 32)
-        )
-    elif preprocessor_type == PreprocessorType.SALIENT_FEATURES_V2:
+    if preprocessor_type == PreprocessorType.SALIENT_FEATURES_V2:
         return get_salient_features_v2_preprocessor(
             image_resize_size=(224, 224),
             grid_size=(32, 32)

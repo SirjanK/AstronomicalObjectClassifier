@@ -2,8 +2,8 @@
 Training script for astronomical object classification.
 
 Usage:
-    # Train logistic regression model (uses semantic features automatically)
-    python trainer.py --name my_model_v1 --model logistic_regression --batch_size 32 --num_epochs 50
+    # Train logistic regression v2 model (uses semantic features automatically)
+    python trainer.py --name my_model_v1 --model logistic_regression_v2 --batch_size 32 --num_epochs 50
     
     # With custom hyperparameters
     python trainer.py --name my_model_v2 --batch_size 64 --learning_rate 0.001 --weight_decay 0.0001 --dropout 0.2 --num_epochs 100
@@ -59,8 +59,8 @@ def parse_args():
                        help='Number of training epochs')
     
     # Model arguments
-    parser.add_argument('--model', type=str, default='logistic_regression',
-                       choices=['logistic_regression', 'logistic_regression_v2'],
+    parser.add_argument('--model', type=str, default='logistic_regression_v2',
+                       choices=['logistic_regression_v2'],
                        help='Model architecture to use')
     
     # Logging arguments

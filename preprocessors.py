@@ -29,33 +29,6 @@ def get_resize_preprocessor(output_size: Tuple[int, int] = (224, 224)) -> transf
     ])
 
 
-def get_salient_features_preprocessor(image_resize_size: Tuple[int, int] = (224, 224), grid_size: Tuple[int, int] = (8, 8)) -> transforms.Compose:
-    """
-    Extract salient features from images for simple baseline models.
-    Features include:
-    - Average channel values (R, G, B)
-    - Brightness (average across all channels)
-    - Grid-based features: mean and max values for each grid_size[0]xgrid_size[1] grid in the image_resize_size image
-    - Texture features: standard deviation per channel
-    - Edge detection features: approximate using gradient magnitude
-    
-    Args:
-        image_resize_size: Size to resize the image to
-        grid_size: Number of grids (height, width) - will create grid_size[0]*grid_size[1] grids
-    
-    Returns:
-        transforms.Compose: Custom preprocessor that returns a feature vector
-    """
-    # Use functools.partial to create a pickle-able function
-    extract_features_fn = partial(extract_salient_features, grid_size=grid_size)
-    
-    return transforms.Compose([
-        transforms.Resize(image_resize_size),
-        transforms.ToTensor(),  # Converts to [C, H, W] and scales to [0, 1] automatically
-        transforms.Lambda(extract_features_fn)
-    ])
-
-
 def get_salient_features_v2_preprocessor(image_resize_size: Tuple[int, int] = (224, 224), grid_size: Tuple[int, int] = (8, 8)) -> transforms.Compose:
     """
     Extract salient features from images for simple baseline models.
