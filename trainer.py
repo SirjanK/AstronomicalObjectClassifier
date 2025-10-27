@@ -60,7 +60,7 @@ def parse_args():
     
     # Model arguments
     parser.add_argument('--model', type=str, default='logistic_regression',
-                       choices=['logistic_regression'],
+                       choices=['logistic_regression', 'logistic_regression_v2'],
                        help='Model architecture to use')
     
     # Logging arguments

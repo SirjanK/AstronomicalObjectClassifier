@@ -7,9 +7,27 @@ import torch.nn as nn
 import json
 from pathlib import Path
 from typing import Dict, Any
+from enum import Enum
 
 from models.logistic_regression import LogisticRegressionModel
-from preprocessors import get_salient_features_preprocessor
+from preprocessors import (
+    get_salient_features_v2_preprocessor, 
+    get_salient_features_preprocessor,
+    get_resize_preprocessor
+)
+
+
+class ModelType(Enum):
+    """Enum for model types."""
+    LOGISTIC_REGRESSION = "logistic_regression"
+    LOGISTIC_REGRESSION_V2 = "logistic_regression_v2"
+
+
+class PreprocessorType(Enum):
+    """Enum for preprocessor types."""
+    SALIENT_FEATURES = "salient_features"
+    SALIENT_FEATURES_V2 = "salient_features_v2"
+    RESIZE = "resize"
 
 
 def create_model_from_config(config: Dict[str, Any]) -> nn.Module:
@@ -31,7 +49,7 @@ def create_model_from_config(config: Dict[str, Any]) -> nn.Module:
     num_classes = config['num_classes']
     dropout = config.get('dropout', 0.0)
     
-    if model_type == 'logistic_regression':
+    if model_type in ['logistic_regression', 'logistic_regression_v2']:
         return LogisticRegressionModel(
             input_dim=input_dim,
             num_classes=num_classes,
@@ -86,6 +104,24 @@ def get_input_dim_from_sample(feature_sample: torch.Tensor) -> int:
     return input_dim
 
 
+def get_preprocessor_for_model(model_type: str) -> PreprocessorType:
+    """
+    Get the preprocessor type for a given model type.
+    
+    Args:
+        model_type: Model type string
+    
+    Returns:
+        PreprocessorType enum
+    """
+    if model_type == 'logistic_regression':
+        return PreprocessorType.SALIENT_FEATURES
+    elif model_type == 'logistic_regression_v2':
+        return PreprocessorType.SALIENT_FEATURES_V2
+    else:
+        raise ValueError(f"Unknown model type: {model_type}")
+
+
 def create_model_from_args_and_sample(args, feature_sample: torch.Tensor, num_classes: int):
     """
     Create a model based on arguments and infer input dimension from feature sample.
@@ -103,8 +139,12 @@ def create_model_from_args_and_sample(args, feature_sample: torch.Tensor, num_cl
     """
     input_dim = get_input_dim_from_sample(feature_sample)
     
+    # Map model type to preprocessor type
+    preprocessor_type = get_preprocessor_for_model(args.model)
+    
     config = {
         'model_type': args.model,
+        'preprocessor_type': preprocessor_type.value,
         'input_dim': int(input_dim),
         'num_classes': int(num_classes),
         'dropout': args.dropout
@@ -125,13 +165,22 @@ def get_model_preprocessor(model_type: str):
     Returns:
         Preprocessor transforms.Compose
     """
-    if model_type == 'logistic_regression':
+    preprocessor_type = get_preprocessor_for_model(model_type)
+    
+    if preprocessor_type == PreprocessorType.SALIENT_FEATURES:
         return get_salient_features_preprocessor(
             image_resize_size=(224, 224),
             grid_size=(32, 32)
         )
+    elif preprocessor_type == PreprocessorType.SALIENT_FEATURES_V2:
+        return get_salient_features_v2_preprocessor(
+            image_resize_size=(224, 224),
+            grid_size=(32, 32)
+        )
+    elif preprocessor_type == PreprocessorType.RESIZE:
+        return get_resize_preprocessor(output_size=(224, 224))
     else:
-        raise ValueError(f"Unknown model type: {model_type}")
+        raise ValueError(f"Unknown preprocessor type: {preprocessor_type}")
 
 
 def create_and_load_model(config_path: Path, checkpoint_path: Path, device: torch.device) -> nn.Module:

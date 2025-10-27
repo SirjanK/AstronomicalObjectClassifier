@@ -67,62 +67,52 @@ def evaluate(data_path: str, model_names: List[str], device: torch.device = None
     num_classes = len(label_to_name)
     class_names = [label_to_name[i] for i in range(num_classes)]
     
-    # We'll get the preprocessor from the first model's config
-    # All models should use the same preprocessor in this setup
-    # Load the first model config to determine preprocessor
-    assets_dir = Path('assets')
-    first_model_dir = assets_dir / model_names[0]
-    first_config_path = first_model_dir / 'model_config.json'
-    
-    if not first_config_path.exists():
-        raise ValueError(f"Model config not found for {model_names[0]}")
-    
-    config = load_model_config(first_config_path)
-    model_type = config['model_type']
-    preprocessor = get_model_preprocessor(model_type)
-    
-    # Create dataloader for test set
-    data_path = Path(data_path)
-    
-    loader = AstronomicalObjectDataLoader(
-        data_path=data_path,
-        preprocessor=preprocessor,
-        batch_size=1,  # Single batch to load all samples
-        num_workers=0  # No parallel processing for evaluation
-    )
-    
-    test_loader = loader.get_dataloader('test')
-    
-    # Collect all test data
-    all_features = []
-    all_labels = []
-    
-    print("Loading test data...")
-    for features, labels in test_loader:
-        all_features.append(features)
-        all_labels.append(labels)
-    
-    all_features = torch.cat(all_features, dim=0)
-    all_labels = torch.cat(all_labels, dim=0)
-    
-    print(f"Loaded {len(all_features)} test samples")
-    
     # Evaluate each model
     results = []
     
     for model_name in model_names:
         print(f"\nEvaluating model: {model_name}")
         
-        # Load model
-        assets_dir = Path('assets') / model_name
-        config_path = assets_dir / 'model_config.json'
-        checkpoint_path = assets_dir / 'best_model.pth'
+        # Load model config and checkpoint
+        assets_dir = Path('assets')
+        model_assets_dir = assets_dir / model_name
+        config_path = model_assets_dir / 'model_config.json'
+        checkpoint_path = model_assets_dir / 'best_model.pth'
         
         if not config_path.exists() or not checkpoint_path.exists():
             print(f"Warning: Model {model_name} not found, skipping")
             continue
         
+        config = load_model_config(config_path)
         model = create_and_load_model(config_path, checkpoint_path, device)
+        
+        # Get the correct preprocessor for this model
+        model_type = config.get('model_type', 'logistic_regression')
+        preprocessor = get_model_preprocessor(model_type)
+        
+        # Load test data with this model's preprocessor
+        loader = AstronomicalObjectDataLoader(
+            data_path=Path(data_path),
+            preprocessor=preprocessor,
+            batch_size=1,  # Single batch to load all samples
+            num_workers=0
+        )
+        
+        test_loader = loader.get_dataloader('test')
+        
+        # Collect all test data
+        all_features = []
+        all_labels = []
+        
+        print(f"Loading test data with preprocessor for {model_name}...")
+        for features, labels in test_loader:
+            all_features.append(features)
+            all_labels.append(labels)
+        
+        all_features = torch.cat(all_features, dim=0)
+        all_labels = torch.cat(all_labels, dim=0)
+        
+        print(f"Loaded {len(all_features)} test samples")
         
         # Run inference
         model.eval()

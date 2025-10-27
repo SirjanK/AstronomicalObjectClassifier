@@ -1,0 +1,6 @@
+{
+  "model_type": "logistic_regression_v2",
+  "input_dim": 2192,
+  "num_classes": 12,
+  "dropout": 0.0
+}
